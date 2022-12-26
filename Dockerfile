@@ -1,5 +1,7 @@
 FROM continuumio/anaconda3
 
+RUN conda init --all
+
 WORKDIR /app
 
 COPY . .
