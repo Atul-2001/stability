@@ -30,12 +30,17 @@ RUN conda install -c conda-forge gcc
 
 RUN conda install -c conda-forge gxx_linux-64==9.5.0
 
-RUN cd .. && \
-    git clone https://github.com/facebookresearch/xformers.git && \
-    cd xformer && \
-    git submodule update --init --recursiv && \
-    pip install -r requirements.tx && \
-    pip install -e
+WORKDIR /app
+
+RUN git clone https://github.com/facebookresearch/xformers.git
+
+WORKDIR /app/xformers
+
+RUN git submodule update --init --recursive
+
+RUN pip install -r requirements.txt
+
+RUN pip install -e .
 
 WORKDIR /app
 
