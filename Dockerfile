@@ -1,22 +1,16 @@
 FROM continuumio/anaconda3
 
-RUN conda init --all
-
 WORKDIR /app
-
-COPY . .
-
-RUN mkdir -p /app/outputs/txt2img
-
-RUN mkdir -p /app/outputs/img2img
-
-RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/Stability-AI/stablediffusion.git
 
-RUN cd stablediffusion
+WORKDIR /app/stablediffusion
 
-RUN conda activate ldm
+RUN conda env create -f environment.yaml
+
+RUN echo "conda activate ldm" >> ~/.bashrc
+
+SHELL ["/bin/bash", "--login", "-c"]
 
 RUN conda install pytorch==1.12.1 torchvision==0.13.1 -c pytorch
 
@@ -41,7 +35,16 @@ RUN cd .. && \
     cd xformer && \
     git submodule update --init --recursiv && \
     pip install -r requirements.tx && \
-    pip install -e && \
-    cd ../stablediffusion
+    pip install -e
 
-ENTRYPOINT ["python", "app.py"]
+WORKDIR /app
+
+COPY . .
+
+RUN mkdir -p /app/outputs/txt2img
+
+RUN mkdir -p /app/outputs/img2img
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["./entrypoint.sh"]
